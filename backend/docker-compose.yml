@@ -1,0 +1,58 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: medusa_postgres_b2b
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medusa-store
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_b2b:/var/lib/postgresql/data
+    networks:
+      - medusa_network_b2b
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: medusa_redis_b2b
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - medusa_network_b2b
+
+  # Medusa Server
+  # This service runs the Medusa backend application
+  # and the admin dashboard.
+  medusa:
+    build: .
+    container_name: medusa_backend_b2b
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "56000:9000"
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
+      - REDIS_URL=redis://redis:6379
+    # env_file:
+    #   - .env
+    volumes:
+      - .:/server
+      - /server/node_modules
+    networks:
+      - medusa_network_b2b
+
+volumes:
+  postgres_data_b2b:
+
+networks:
+  medusa_network_b2b:
+    driver: bridge
