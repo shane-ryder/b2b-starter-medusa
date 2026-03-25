@@ -42,10 +42,12 @@ services:
       - NODE_ENV=development
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
       - REDIS_URL=redis://redis:6379
-      - HTTP_PROXY=http://host.docker.internal:1082
-      - HTTPS_PROXY=http://host.docker.internal:1082
-    # env_file:
-    #   - .env
+      - HTTP_PROXY=http://host.docker.internal:7890
+      - HTTPS_PROXY=http://host.docker.internal:7890
+      - STRAPI_API_URL=http://host.docker.internal:13377/api
+      - STRAPI_API_TOKEN=50a5de8edacc7144541106d22673047d569b7787e809a267b8728b2a945c02c909992070af12c20f98188dac167a0c87b564c5bb9af992f5c42d7a254efa60ecbd0b3070822c248ccc6758503b575fe16728459dcbe981c082e1f9a0c810ba8272d2a8ca69a7bb9fc57377547550741830042cff09ce52f36aea2482ef6c4c6a
+#    env_file:
+#       - .env
     volumes:
       - .:/server
       - /server/node_modules

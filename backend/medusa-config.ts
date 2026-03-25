@@ -2,6 +2,7 @@ import { QUOTE_MODULE } from "./src/modules/quote";
 import { APPROVAL_MODULE } from "./src/modules/approval";
 import { COMPANY_MODULE } from "./src/modules/company";
 import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
+import {STRAPI_MODULE} from "./src/modules/strapi";
 
 loadEnv(process.env.NODE_ENV!, process.cwd());
 
@@ -36,6 +37,14 @@ module.exports = defineConfig({
     },
     [Modules.WORKFLOW_ENGINE]: {
       resolve: "@medusajs/medusa/workflow-engine-inmemory",
+    },
+    [STRAPI_MODULE]: {
+      resolve: "./modules/strapi",
+      options: {
+        apiUrl: process.env.STRAPI_API_URL || "http://localhost:1337",
+        apiToken: process.env.STRAPI_API_TOKEN || "",
+        defaultLocale: process.env.STRAPI_DEFAULT_LOCALE || "en",
+      },
     },
   },
   admin: {
