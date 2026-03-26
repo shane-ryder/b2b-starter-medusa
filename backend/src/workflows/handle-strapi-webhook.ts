@@ -7,6 +7,7 @@ import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
 import { prepareStrapiUpdateDataStep } from "./steps/prepare-strapi-update-data"
 import { clearProductCacheStep } from "./steps/clear-product-cache"
 import { updateProductOptionValueStep } from "./steps/update-product-option-value"
+import { setStrapiUpdateCacheStep } from "./steps/set-strapi-update-cache"
 import { 
   updateProductsWorkflow, 
   updateProductVariantsWorkflow, 
@@ -30,6 +31,15 @@ export const handleStrapiWebhookWorkflow = createWorkflow(
 
     when(input, (input) => input.entry.model === "product")
       .then(() => {
+        const productId = transform({ preparedData }, (data) => {
+          return (data.preparedData.data as any).id as string
+        })
+
+        setStrapiUpdateCacheStep({
+          model: "product",
+          id: productId,
+        }).config({ name: "set-strapi-product-update-cache" })
+
         updateProductsWorkflow.runAsStep({
           input: {
             products: [preparedData.data as unknown as UpsertProductDTO],
@@ -37,15 +47,20 @@ export const handleStrapiWebhookWorkflow = createWorkflow(
         })
 
         // Clear the product cache after update
-        const productId = transform({ preparedData }, (data) => {
-          return (data.preparedData.data as any).id
-        })
-
         clearProductCacheStep({ productId })
       })
 
     when(input, (input) => input.entry.model === "product-variant")
       .then(() => {
+        const variantId = transform({ preparedData }, (data) => {
+          return (data.preparedData.data as any).id as string
+        })
+
+        setStrapiUpdateCacheStep({
+          model: "product-variant",
+          id: variantId,
+        }).config({ name: "set-strapi-variant-update-cache" })
+
         const variants = updateProductVariantsWorkflow.runAsStep({
           input: {
             product_variants: [preparedData.data as unknown as UpsertProductVariantDTO],
@@ -59,6 +74,15 @@ export const handleStrapiWebhookWorkflow = createWorkflow(
 
     when(input, (input) => input.entry.model === "product-option")
       .then(() => {
+        const optionId = transform({ preparedData }, (data) => {
+          return (data.preparedData.data as any).selector.id as string
+        })
+
+        setStrapiUpdateCacheStep({
+          model: "product-option",
+          id: optionId,
+        }).config({ name: "set-strapi-option-update-cache" })
+
         const options = updateProductOptionsWorkflow.runAsStep({
           input: preparedData.data as any,
         })
@@ -70,6 +94,15 @@ export const handleStrapiWebhookWorkflow = createWorkflow(
 
     when(input, (input) => input.entry.model === "product-option-value")
       .then(() => {
+        const optionValueId = transform({ preparedData }, (data) => {
+          return data.preparedData.data.optionValueId as string
+        })
+
+        setStrapiUpdateCacheStep({
+          model: "product-option-value",
+          id: optionValueId,
+        }).config({ name: "set-strapi-option-value-update-cache" })
+
         // Update the option value using the Product Module
         const optionValueData = transform({ preparedData }, (data) => ({
           id: data.preparedData.data.optionValueId as string,

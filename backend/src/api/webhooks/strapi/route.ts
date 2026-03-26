@@ -4,6 +4,7 @@ import {
   handleStrapiWebhookWorkflow, 
   WorkflowInput,
 } from "../../../workflows/handle-strapi-webhook"
+import { createProductInMedusaFromStrapiWorkflow } from "../../../workflows/create-product-in-medusa-from-strapi"
 
 export const POST = async (
   req: MedusaRequest,
@@ -26,20 +27,27 @@ export const POST = async (
     return
   }
   
-  if (body.event === "entry.update") {
-    const entry = body.entry as Record<string, unknown>
-    const entityCacheKey = `strapi-update:${body.model}:${entry.medusaId}`
-    await cachingService.set({
-      key: entityCacheKey,
-      data: { status: "processing", timestamp: Date.now() },
-      ttl: 10, 
-    })
-    
-    await handleStrapiWebhookWorkflow(req.scope).run({
-      input: {
-        entry: body,
-      } as WorkflowInput,
-    })
+  const isCreateProductWebhook =
+    body.event === "entry.create" && body.model === "product"
+
+  const isUpdateWebhook = body.event === "entry.update"
+
+  if (isUpdateWebhook || isCreateProductWebhook) {
+    if (isUpdateWebhook) {
+      await handleStrapiWebhookWorkflow(req.scope).run({
+        input: {
+          entry: body,
+        } as WorkflowInput,
+      })
+    }
+
+    if (isCreateProductWebhook) {
+      await createProductInMedusaFromStrapiWorkflow(req.scope).run({
+        input: {
+          entry: body,
+        },
+      })
+    }
     
     // Cache the hash to prevent reprocessing (TTL: 60 seconds)
     await cachingService.set({

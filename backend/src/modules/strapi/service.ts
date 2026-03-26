@@ -175,21 +175,65 @@ export default class StrapiModuleService {
     populate?: string[]
   ) {
     try {
-      const result = await this.client_.collection(collection).find({
-        filters: {
+      return await this.findFirst(
+        collection,
+        {
           medusaId: {
             $eq: medusaId,
           },
         },
-        populate,
-      })
-
-      return result.data[0]
+        {
+          populate,
+        }
+      )
     }
     catch (error) {
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
         this.formatStrapiError(error, `Failed to find ${collection} in Strapi`)
+      )
+    }
+  }
+
+  getApiUrl(): string {
+    return this.options_.apiUrl
+  }
+
+  async findOne(
+    collection: Collection,
+    documentId: string,
+    queryParams?: Record<string, unknown>
+  ) {
+    try {
+      const result = await this.client_
+        .collection(collection)
+        .findOne(documentId, queryParams as any)
+
+      return result.data
+    } catch (error) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to find ${collection} document ${documentId} in Strapi`)
+      )
+    }
+  }
+
+  async findFirst(
+    collection: Collection,
+    filters: Record<string, unknown>,
+    queryParams?: Record<string, unknown>
+  ) {
+    try {
+      const result = await this.client_.collection(collection).find({
+        ...(queryParams || {}),
+        filters,
+      } as any)
+
+      return result.data[0]
+    } catch (error) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to query ${collection} in Strapi`)
       )
     }
   }
