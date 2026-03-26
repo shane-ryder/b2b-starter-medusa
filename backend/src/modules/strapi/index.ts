@@ -8,3 +8,4 @@ export default Module(STRAPI_MODULE, {
   service: StrapiModuleService,
   loaders: [initStrapiClientLoader],
 })
+

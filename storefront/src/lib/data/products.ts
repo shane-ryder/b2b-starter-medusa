@@ -108,6 +108,7 @@ export const listProducts = async ({
           limit,
           offset,
           region_id: region.id,
+          // 添加 *strapi_product 到fields, 使可以查询到Strapi中的产品信息
           fields: "*variants.calculated_price",
           ...queryParams,
         },

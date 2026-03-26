@@ -10,13 +10,13 @@ export type ModuleOptions = {
 }
 
 export default async function initStrapiClientLoader({
-                                                       container,
-                                                       options,
-                                                     }: LoaderOptions<ModuleOptions>) {
+  container,
+  options,
+}: LoaderOptions<ModuleOptions>) {
   if (!options?.apiUrl || !options?.apiToken) {
     throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "Strapi API URL and token are required"
+      MedusaError.Types.INVALID_DATA,
+      "Strapi API URL and token are required"
     )
   }
 

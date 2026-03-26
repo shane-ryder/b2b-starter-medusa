@@ -21,8 +21,8 @@ export default class StrapiModuleService {
   protected readonly client_: StrapiClient
 
   constructor(
-      { logger, strapiClient }: InjectedDependencies,
-      options: ModuleOptions
+    { logger, strapiClient }: InjectedDependencies, 
+    options: ModuleOptions
   ) {
     this.options_ = options
     this.logger_ = logger
@@ -34,52 +34,52 @@ export default class StrapiModuleService {
     if (error?.response) {
       const response = error.response
       const parts = [context]
-
+      
       if (response.status) {
         parts.push(`HTTP ${response.status}`)
       }
-
+      
       if (response.statusText) {
         parts.push(response.statusText)
       }
-
+      
       // Add request URL if available
       if (response.url) {
         parts.push(`URL: ${response.url}`)
       }
-
+      
       // Add request method if available
       if (error.request?.method) {
         parts.push(`Method: ${error.request.method}`)
       }
-
+      
       return parts.join(' - ')
     }
-
+    
     // If error has a response with Strapi error structure
     if (error?.error) {
       const strapiError = error.error
       const parts = [context]
-
+      
       if (strapiError.status) {
         parts.push(`Status ${strapiError.status}`)
       }
-
+      
       if (strapiError.name) {
         parts.push(`[${strapiError.name}]`)
       }
-
+      
       if (strapiError.message) {
         parts.push(strapiError.message)
       }
-
+      
       if (strapiError.details && Object.keys(strapiError.details).length > 0) {
         parts.push(`Details: ${JSON.stringify(strapiError.details)}`)
       }
-
+      
       return parts.join(' - ')
     }
-
+    
     // Fallback for non-Strapi errors
     return `${context}: ${error.message || error}`
   }
@@ -97,7 +97,7 @@ export default class StrapiModuleService {
         }
 
         const imageBuffer = await imageResponse.arrayBuffer()
-
+        
         // Extract filename from URL or generate one
         const urlParts = imageUrl.split("/")
         const filename = urlParts[urlParts.length - 1] || `image-${Date.now()}.jpg`
@@ -113,7 +113,7 @@ export default class StrapiModuleService {
             name: filename,
           },
         })
-
+        
         if (result && result[0] && result[0].id) {
           uploadedIds.push(result[0].id)
         }
@@ -130,8 +130,8 @@ export default class StrapiModuleService {
       await this.client_.files.delete(imageId)
     } catch (error) {
       throw new MedusaError(
-          MedusaError.Types.UNEXPECTED_STATE,
-          this.formatStrapiError(error, `Failed to delete image ${imageId} from Strapi`)
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to delete image ${imageId} from Strapi`)
       )
     }
   }
@@ -141,8 +141,8 @@ export default class StrapiModuleService {
       return await this.client_.collection(collection).create(data)
     } catch (error) {
       throw new MedusaError(
-          MedusaError.Types.UNEXPECTED_STATE,
-          this.formatStrapiError(error, `Failed to create ${collection} in Strapi`)
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to create ${collection} in Strapi`)
       )
     }
   }
@@ -152,8 +152,8 @@ export default class StrapiModuleService {
       return await this.client_.collection(collection).update(id, data)
     } catch (error) {
       throw new MedusaError(
-          MedusaError.Types.UNEXPECTED_STATE,
-          this.formatStrapiError(error, `Failed to update ${collection} in Strapi`)
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to update ${collection} in Strapi`)
       )
     }
   }
@@ -163,16 +163,16 @@ export default class StrapiModuleService {
       return await this.client_.collection(collection).delete(id)
     } catch (error) {
       throw new MedusaError(
-          MedusaError.Types.UNEXPECTED_STATE,
-          this.formatStrapiError(error, `Failed to delete ${collection} in Strapi`)
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to delete ${collection} in Strapi`)
       )
     }
   }
 
   async findByMedusaId(
-      collection: Collection,
-      medusaId: string,
-      populate?: string[]
+    collection: Collection, 
+    medusaId: string, 
+    populate?: string[]
   ) {
     try {
       const result = await this.client_.collection(collection).find({
@@ -188,20 +188,20 @@ export default class StrapiModuleService {
     }
     catch (error) {
       throw new MedusaError(
-          MedusaError.Types.UNEXPECTED_STATE,
-          this.formatStrapiError(error, `Failed to find ${collection} in Strapi`)
+        MedusaError.Types.UNEXPECTED_STATE,
+        this.formatStrapiError(error, `Failed to find ${collection} in Strapi`)
       )
     }
   }
 
   // List method for virtual read-only link
   async list(filter: { product_id: string | string[] }) {
-    const ids = Array.isArray(filter.product_id)
-        ? filter.product_id
-        : [filter.product_id]
-
+    const ids = Array.isArray(filter.product_id) 
+      ? filter.product_id 
+      : [filter.product_id]
+    
     const results: any[] = []
-
+    
     for (const productId of ids) {
       try {
         // Fetch product with all relations populated
@@ -220,7 +220,7 @@ export default class StrapiModuleService {
             },
           },
         })
-
+        
         if (result.data && result.data.length > 0) {
           const product = result.data[0]
           results.push({
@@ -250,7 +250,8 @@ export default class StrapiModuleService {
         this.logger_.warn(this.formatStrapiError(error, `Failed to fetch product ${productId} from Strapi`))
       }
     }
-
+    
     return results
   }
 }
+

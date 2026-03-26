@@ -46,6 +46,24 @@ module.exports = defineConfig({
         defaultLocale: process.env.STRAPI_DEFAULT_LOCALE || "en",
       },
     },
+    [Modules.CACHING]: {
+      resolve: "@medusajs/medusa/caching",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/caching-redis",
+            id: "caching-redis",
+            options: {
+              redisUrl: process.env.REDIS_URL,
+              // more options...
+            },
+          },
+        ],
+      },
+    },
+  },
+  featureFlags: {
+    caching: true,
   },
   admin: {
     vite: (config) => {
