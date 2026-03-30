@@ -9,9 +9,9 @@
     "medusa-b2b-storefront"
   ],
   "scripts": {
-    "dev": "next dev -p 3006",
+    "dev": "next dev -p 57000",
     "build": "next build",
-    "start": "next start -p 3006",
+    "start": "next start -p 57000",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build"
   },
