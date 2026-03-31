@@ -4,6 +4,7 @@ import {
   MedusaResponse,
 } from "@medusajs/framework";
 import { defineMiddlewares } from "@medusajs/medusa";
+import { z } from "@medusajs/framework/zod";
 import { adminMiddlewares } from "./admin/middlewares";
 import { storeMiddlewares } from "./store/middlewares";
 import {Modules} from "@medusajs/framework/utils";
@@ -12,6 +13,13 @@ export default defineMiddlewares({
   routes: [
     ...adminMiddlewares,
     ...storeMiddlewares,
+    {
+      matcher: "/admin/products",
+      method: ["POST"],
+      additionalDataValidator: {
+        brand_id: z.string().optional(),
+      },
+    },
     {
       matcher: "/store/customers/me",
       middlewares: [

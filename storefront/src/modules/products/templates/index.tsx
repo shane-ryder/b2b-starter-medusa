@@ -1,17 +1,18 @@
-import { HttpTypes } from "@medusajs/types"
 import ImageGallery from "@/modules/products/components/image-gallery"
 import ProductActions from "@/modules/products/components/product-actions"
 import ProductTabs from "@/modules/products/components/product-tabs"
 import RelatedProducts from "@/modules/products/components/related-products"
 import ProductInfo from "@/modules/products/templates/product-info"
 import SkeletonRelatedProducts from "@/modules/skeletons/templates/skeleton-related-products"
+import { StoreProductWithBrand } from "@/types"
+import { HttpTypes } from "@medusajs/types"
 import { notFound } from "next/navigation"
 import React, { Suspense } from "react"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import ProductFacts from "../components/product-facts"
 
 type ProductTemplateProps = {
-  product: HttpTypes.StoreProduct
+  product: StoreProductWithBrand
   region: HttpTypes.StoreRegion
   countryCode: string
 }

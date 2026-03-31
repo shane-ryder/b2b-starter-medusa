@@ -1,6 +1,7 @@
 import { QUOTE_MODULE } from "./src/modules/quote";
 import { APPROVAL_MODULE } from "./src/modules/approval";
 import { COMPANY_MODULE } from "./src/modules/company";
+import { BRAND_MODULE } from "./src/modules/brand";
 import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 import {STRAPI_MODULE} from "./src/modules/strapi";
 
@@ -23,6 +24,9 @@ module.exports = defineConfig({
     },
   },
   modules: {
+    [BRAND_MODULE]: {
+      resolve: "./modules/brand",
+    },
     [COMPANY_MODULE]: {
       resolve: "./modules/company",
     },

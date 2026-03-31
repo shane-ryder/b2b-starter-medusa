@@ -5,6 +5,7 @@ import { getAuthHeaders, getCacheOptions } from "@/lib/data/cookies"
 import { getRegion } from "@/lib/data/regions"
 import { sortProducts } from "@/lib/util/sort-products"
 import { SortOptions } from "@/modules/store/components/refinement-list/sort-products"
+import { StoreProductWithBrand } from "@/types"
 import { HttpTypes } from "@medusajs/types"
 
 export const getProductsById = async ({
@@ -23,14 +24,14 @@ export const getProductsById = async ({
   }
 
   return sdk.client
-    .fetch<{ products: HttpTypes.StoreProduct[] }>(`/store/products`, {
+    .fetch<{ products: StoreProductWithBrand[] }>(`/store/products`, {
       credentials: "include",
       method: "GET",
       query: {
         id: ids,
         region_id: regionId,
         fields:
-          "*variants,*variants.calculated_price,*variants.inventory_quantity",
+          "*variants,*variants.calculated_price,+variants.inventory_quantity,+brand.*",
       },
       headers,
       next,
@@ -49,14 +50,14 @@ export const getProductByHandle = async (handle: string, regionId: string) => {
   }
 
   return sdk.client
-    .fetch<{ products: HttpTypes.StoreProduct[] }>(`/store/products`, {
+    .fetch<{ products: StoreProductWithBrand[] }>(`/store/products`, {
       credentials: "include",
       method: "GET",
       query: {
         handle,
         region_id: regionId,
         fields:
-          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags",
+          "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags,+brand.*",
       },
       headers,
       next,
@@ -74,7 +75,7 @@ export const listProducts = async ({
   queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
   countryCode: string
 }): Promise<{
-  response: { products: HttpTypes.StoreProduct[]; count: number }
+  response: { products: StoreProductWithBrand[]; count: number }
   nextPage: number | null
   queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
 }> => {
@@ -99,7 +100,7 @@ export const listProducts = async ({
   }
 
   return sdk.client
-    .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(
+    .fetch<{ products: StoreProductWithBrand[]; count: number }>(
       `/store/products`,
       {
         credentials: "include",
@@ -108,8 +109,8 @@ export const listProducts = async ({
           limit,
           offset,
           region_id: region.id,
-          // 添加 *strapi_product 到fields, 使可以查询到Strapi中的产品信息
-          fields: "*variants.calculated_price",
+          fields:
+            "*variants.calculated_price,+variants.inventory_quantity,+brand.*",
           ...queryParams,
         },
         headers,
@@ -146,7 +147,7 @@ export const listProductsWithSort = async ({
   sortBy?: SortOptions
   countryCode: string
 }): Promise<{
-  response: { products: HttpTypes.StoreProduct[]; count: number }
+  response: { products: StoreProductWithBrand[]; count: number }
   nextPage: number | null
   queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
 }> => {

@@ -1,15 +1,24 @@
-import { HttpTypes } from "@medusajs/types"
+import { StoreProductWithBrand } from "@/types"
 import { Heading, Text } from "@medusajs/ui"
-import LocalizedClientLink from "@/modules/common/components/localized-client-link"
 
 type ProductInfoProps = {
-  product: HttpTypes.StoreProduct
+  product: StoreProductWithBrand
 }
 
 const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
     <div id="product-info">
       <div className="flex flex-col gap-y-4 w-full">
+        {product.brand?.name ? (
+          <div className="flex flex-col gap-y-1">
+            <Text className="text-sm uppercase tracking-[0.2em] text-ui-fg-subtle">
+              Brand
+            </Text>
+            <Text className="text-base text-ui-fg-base" data-testid="product-brand">
+              {product.brand.name}
+            </Text>
+          </div>
+        ) : null}
         <Heading
           level="h1"
           className="text-[2.5rem] leading-10 text-ui-fg-base"
